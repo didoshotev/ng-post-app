@@ -1,0 +1,21 @@
+.pull-right {
+    float: right !important;
+  }
+
+
+  .col-xs-12 {
+    white-space: nowrap !important;
+    max-width: 100%;
+    overflow: auto;
+  }
+  .col-xs-10 {
+    float: none !important;
+    display: inline-block !important;
+  }
+  .col-xs-3 a {
+    height: 100px;
+    background: pink;
+    display: block;
+    margin-top: 10px;
+    padding: 10px
+  }

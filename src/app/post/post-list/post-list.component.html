@@ -1,0 +1,16 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.1/css/all.min.css" integrity="sha256-2XFplPlrFClt0bIdPgpz8H7ojnk10H69xRqd9+uTShA=" crossorigin="anonymous" />
+
+<section>
+<div class="container">
+    <div class="text-center mb-5">
+        <h5 class="text-primary h4">Our Blog</h5>
+        <h2 class="display-20 display-md-18 display-lg-16">Most recent in Zero to Hero</h2>
+    </div>
+    <div class="row">
+        
+    </div>
+        <app-post-item *ngFor="let post of allPosts | async; let i = index"
+        [postItem]="post" [index]="i"
+        ></app-post-item>
+</div>
+</section>

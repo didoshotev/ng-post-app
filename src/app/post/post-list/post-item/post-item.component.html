@@ -1,0 +1,30 @@
+<div class="row" style="display: inline-block !important; padding: 30px;">
+<div class="">
+    <article class="card card-style2">
+        <div class="card-img">
+            <img class="w-100 p-3" src="{{ postItem.imageUrl }}" alt="https://www.blogtyrant.com/wp-content/uploads/2017/02/how-to-write-a-good-blog-post.png">
+            <div class="date"><span>15</span>Sep</div>
+        </div>
+        <div class="card-body">
+            <h3 style="color: #0c5583;" class="h5">{{ postItem.title}}</h3>
+            <p class="display-30">Click below to Read the full Article</p>
+            <a 
+            class="read-more" style="cursor: pointer; color: #0c5583;"
+            [routerLink]="[postItem.objectId]"
+            >Read More</a>
+            <div class="pull-right">
+                <h6 style="margin-bottom: 20px;">Category: {{ postItem.type }}</h6>
+                <button class="btn btn-primary btn-sm">Save Post</button>
+            </div>
+        </div>
+        <div class="card-footer">
+            <ul>
+                <li><a style="cursor: pointer; color: #0c5583;"><i class="fas fa-user"></i></a></li>
+                <li><a style="cursor: pointer; color: #0c5583;"><i class="far fa-likes"></i><span>Likes: {{postItem.likes}}</span></a></li>
+            </ul>
+        </div>
+    </article>
+</div>
+</div>
+
+

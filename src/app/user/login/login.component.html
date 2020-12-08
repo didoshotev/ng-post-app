@@ -1,0 +1,17 @@
+  <div class="wrapper fadeInDown">
+    <h2>Sign In</h2>
+    <div id="formContent">
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+        <input type="text" id="login" class="fadeIn second" name="login" formControlName="email" placeholder="email">
+        <input type="password" id="password" class="fadeIn third" name="login" formControlName="password" placeholder="password">
+        <button  class="btn btn-primary" style="margin-bottom: 20px; margin-top: 20px;">Log In</button>
+      </form>
+      <div id="formFooter">
+        <a [routerLink]="['/user/register']" class="underlineHover" href="#">Don't have an account?</a>
+      </div>
+    </div>
+  </div>
+
+  
+
+

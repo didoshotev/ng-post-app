@@ -1,0 +1,27 @@
+<h4 *ngIf="editMode">You are in edit mode</h4>
+<h4 *ngIf="!editMode">Create new post</h4>
+<hr>
+<form [formGroup]="postForm" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="title">Post Title</label>
+      <input type="text" class="form-control" formControlName="title">
+    </div>
+    <div class="form-group">
+      <label for="type">Type</label>
+      <select class="form-control" formControlName="type">
+        <option>Technology and Science</option>
+        <option>Entertainment and Gaming</option>
+        <option>Health and Wellness</option>
+      </select>
+    </div>
+    <div class="form-group">
+        <label for="imageUrl">Image URL</label>
+        <input type="text" class="form-control" formControlName="imageUrl">
+      </div>
+    <div class="form-group">
+      <label for="exampleFormControlTextarea1">Text Content</label>
+      <textarea class="form-control" rows="8" formControlName="textContent"></textarea>
+    </div>
+    <button type="submit" class="btn btn-success">Submit</button>
+    <button type="button" class="btn btn-danger" style="position: relative; left: 20px;" (click)="onDiscard()" >Discard</button>
+  </form>
