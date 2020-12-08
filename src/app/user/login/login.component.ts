@@ -21,7 +21,8 @@ export class LoginComponent implements OnInit {
 
   onSubmit() {
     let {email, password} = this.loginForm.value;
-    this.userService.login(email, password).subscribe(response => {
+    this.userService.login(email, password).subscribe(userObj => {
+      this.userService.user.next(userObj); // pass initial user state
     })
   }
 

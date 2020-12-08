@@ -15,6 +15,9 @@
         </ul>
 
         <ul class="nav navbar-nav navbar-right">
+            <li *ngIf="isAuth">
+                <a [routerLink]="['/user/profile']" class="nav-link active" style="cursor: pointer;">{{user.name}}</a>
+            </li>
              <li *ngIf="!isAuth">
                 <a [routerLink]="['/user/login']" class="nav-link" style="cursor: pointer;">Login</a>
             </li>

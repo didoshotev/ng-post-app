@@ -82,6 +82,8 @@ export class PostService {
         ).pipe(
             catchError(this.handleError),
             tap(newObj => {
+                console.log('Object edited');
+                
             })
         )
     }

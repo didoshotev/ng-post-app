@@ -25,11 +25,9 @@ export class RegisterComponent implements OnInit {
   onSubmit() {
     let {email, username, password, repeatPassword} = this.mainForm.value;
     this.userService.register(email, password, username)
-    .subscribe(response => {
+    .subscribe(userObj => {
+      this.userService.user.next(userObj); // pass initial user state
     })
-      
-
-    //this.userService.register()
   }
 
 }
