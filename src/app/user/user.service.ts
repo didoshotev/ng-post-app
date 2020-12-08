@@ -11,13 +11,15 @@ import { User } from './user.model';
     providedIn: 'root'
 })
 export class UserService {
-    // isLogged = false;
     userToken;
 
     user = new BehaviorSubject<any>(null);
     private tokenExpirationTimer: any;
 
-    constructor(private http: HttpClient, private router: Router) { }
+    constructor(
+        private http: HttpClient,
+         private router: Router,
+         ) { }
 
     register(email: string, password: string, username: string) {
         return this.http.post<any>(
@@ -26,8 +28,8 @@ export class UserService {
                 'email': email,
                 'password': password,
                 'name': username,
-                'postsLiked': {},
-                'postsCreated': {},
+                'postsLiked': [],
+                'postsCreated': [],
 
             },
         ).pipe(
@@ -82,11 +84,10 @@ export class UserService {
             userData.name,
             userData.objectId,
             userData.token,
-            userData.postsCreated,
-            userData.postsLiked,
+            userData.createdPosts,
+            userData.likedPosts,
             userData.savedPosts,
         )
-
         if (loadedUser.token) {
             this.user.next(loadedUser);
             //   const expirationDuration = new Date(userData._tokenExperationDate)
@@ -104,7 +105,6 @@ export class UserService {
         }
         this.tokenExpirationTimer = null;
     }
-
 
 
     autoLogout(expirationDuration: number) {
@@ -147,9 +147,7 @@ export class UserService {
             }
         ).pipe(
             catchError(this.handleError),
-            tap(newUserObj => {
-            })
-        ).subscribe()
+        )
     }
 
 

@@ -22,42 +22,46 @@ export class PostDetailComponent implements OnInit, OnDestroy {
     private currentRoute: ActivatedRoute,
     private postService: PostService,
     private userService: UserService,
-    ) { }
+  ) { }
 
   ngOnInit(): void {
     let user = JSON.parse(localStorage.getItem('userData'));
     this.currentUser = user;
 
     this.currPostSubscription = this.currentRoute.params
-    .subscribe(
-      (data: Params) => {
-        this.currentPostId = data['id'];
-        this.currentPost = this.postService.getPostById(this.currentPostId)
-        .subscribe(post => {
-          this.currentPost = post;
-          if(user.objectId === this.currentPost.ownerId) {
-            this.isCreator = true;
-          } else {
-            this.isCreator = false
-          }
-          let isLikedCheck = user.likedPosts.filter(item => item.postId === this.currentPost.objectId).length;
-          if (isLikedCheck == !0) {
-            this.isLiked = true;
-            return
-          } else {
-            this.isLiked = false
-          }
-        })
-      }
-    )
+      .subscribe(
+        (data: Params) => {
+          this.currentPostId = data['id'];
+          this.currentPost = this.postService.getPostById(this.currentPostId)
+            .subscribe(post => {
+              this.currentPost = post;
+              if (user.objectId === this.currentPost.ownerId) {
+                this.isCreator = true;
+              } else {
+                this.isCreator = false
+              }
+              let isLikedCheck = user.likedPosts.filter(item => item.postId === this.currentPost.objectId).length;
+              if (isLikedCheck == !0) {
+                this.isLiked = true;
+                return
+              } else {
+                this.isLiked = false
+              }
+            })
+        }
+      )
+      console.log(this.userService.user);
   }
 
   onLike() {
     let likes = +this.currentPost.likes;
     likes++
     this.isLiked = true;
-    this.postService.editPostById(this.currentPost.objectId, {likes}).subscribe();
-    this.userService.updateUserLikedPosts(this.currentUser.objectId, this.currentPost);
+    this.postService.editPostById(this.currentPost.objectId, { likes }).subscribe()
+    this.userService.updateUserLikedPosts(this.currentUser.objectId, this.currentPost).subscribe
+    (newData => {
+      this.userService.user.next(newData) //update user BehaviourSubject
+    });
   }
 
   ngOnDestroy() {

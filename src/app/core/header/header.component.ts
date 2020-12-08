@@ -10,13 +10,14 @@ import { UserService } from 'src/app/user/user.service';
 export class HeaderComponent implements OnInit, OnDestroy {
   isAuth = false;
   private userSub: Subscription;
+  user;
 
   constructor(private userService: UserService) { }
 
   ngOnInit(): void {
     this.userSub = this.userService.user.subscribe(user => {
       this.isAuth = !user? false : true;
-      
+      this.user = user;
     })
   }
 
