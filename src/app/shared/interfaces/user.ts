@@ -6,6 +6,6 @@ export interface IUser{
   email: string;
   name: string;
   objectId: string;
-  likedPosts: {};
-  savedPosts: {};
+  postsLiked: [];
+  savedPosts: [];
 }

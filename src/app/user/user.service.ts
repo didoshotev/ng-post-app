@@ -85,7 +85,7 @@ export class UserService {
             userData.objectId,
             userData.token,
             userData.createdPosts,
-            userData.likedPosts,
+            userData.postsLiked,
             userData.savedPosts,
         )
         if (loadedUser.token) {
@@ -123,8 +123,8 @@ export class UserService {
         this.headerToAppend(headers)
 
         let newObj = [];
-        let likedPosts = currentUser.likedPosts
-        likedPosts.map(item => newObj.push(item))
+        let postsLiked = currentUser.postsLiked
+        postsLiked.map(item => newObj.push(item))
         newObj.push({ postId: post.objectId, title: post.title });
 
         let newUserData = {
@@ -133,7 +133,7 @@ export class UserService {
             objectId: currentUser.objectId,
             token: currentUser.token,
             createdPosts: currentUser.createdPosts,
-            likedPosts: newObj
+            postsLiked: newObj
         }
         localStorage.setItem('userData', JSON.stringify(newUserData));
 
@@ -163,7 +163,7 @@ export class UserService {
             postsLiked,
             savedPosts,
         )
-
+        
         this.user.next(currentUser);
         this.autoLogout(3600 * 1000);
         localStorage.setItem('userData', JSON.stringify(currentUser));

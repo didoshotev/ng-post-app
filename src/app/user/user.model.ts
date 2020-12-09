@@ -7,7 +7,7 @@ export class User implements IUser {
         public objectId: string,
         public token: string,
         public createdPosts: {},
-        public likedPosts: {},
-        public savedPosts: {},
+        public postsLiked: [],
+        public savedPosts: [],
     ) { }
 }

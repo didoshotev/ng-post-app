@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
+import { mergeMap, tap } from 'rxjs/operators';
 import { UserService } from '../user.service';
 
 @Component({
@@ -24,10 +25,14 @@ export class RegisterComponent implements OnInit {
 
   onSubmit() {
     let {email, username, password, repeatPassword} = this.mainForm.value;
-    this.userService.register(email, password, username)
-    .subscribe(userObj => {
-      this.userService.user.next(userObj); // pass initial user state
-    })
+    this.userService.register(email, password, username).pipe(
+      tap(data => {
+        console.log('after register pipe!');
+        return data
+      }), mergeMap(data => {
+        return this.userService.login(email, password);
+      })
+    ).subscribe();
   }
 
 }

@@ -1,4 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { UserService } from 'src/app/user/user.service';
 
@@ -12,21 +13,26 @@ export class HeaderComponent implements OnInit, OnDestroy {
   private userSub: Subscription;
   user;
 
-  constructor(private userService: UserService) { }
+  constructor(private userService: UserService, private router: Router) { }
 
   ngOnInit(): void {
     this.userSub = this.userService.user.subscribe(user => {
-      this.isAuth = !user? false : true;
+      this.isAuth = !user ? false : true;
       this.user = user;
     })
   }
 
-  onLogout():void {
+  // [routerLink]="['/user/profile']"
+  onProfile() {
+    this.router.navigate(['/user/profile']);
+  }
+
+  onLogout(): void {
     this.userService.logout();
   }
 
   ngOnDestroy() {
     this.userSub.unsubscribe();
   }
- 
+
 }
