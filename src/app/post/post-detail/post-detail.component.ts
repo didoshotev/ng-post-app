@@ -40,7 +40,7 @@ export class PostDetailComponent implements OnInit, OnDestroy {
               } else {
                 this.isCreator = false
               }
-              let isLikedCheck = user.likedPosts.filter(item => item.postId === this.currentPost.objectId).length;
+              let isLikedCheck = user.postsLiked.filter(item => item.postId === this.currentPost.objectId).length;
               if (isLikedCheck == !0) {
                 this.isLiked = true;
                 return
@@ -50,8 +50,7 @@ export class PostDetailComponent implements OnInit, OnDestroy {
             })
         }
       )
-      console.log(this.userService.user);
-  }
+    }
 
   onLike() {
     let likes = +this.currentPost.likes;

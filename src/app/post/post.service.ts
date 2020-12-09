@@ -33,6 +33,7 @@ export class PostService {
             {
                 ...data,
                 'ownerId': currentUser.objectId,
+                'ownerName': currentUser.name,
                 'likes': 0
             },
             {

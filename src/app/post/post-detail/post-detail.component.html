@@ -9,15 +9,12 @@
             <h1 class="mt-4">{{ currentPost.title }}</h1>
 
             <!-- Author -->
-            <p class="lead">
-                by
-                <a href="#">Start Bootstrap</a>
-            </p>
-
+            <div class="lead">
+                Written by <h5>{{ currentPost.ownerName}}</h5>
+            </div>
             <hr>
-
             <!-- Date/Time -->
-            <p>Posted on January 1, 2019 at 12:00 PM</p>
+            <p>{{ currentPost.created | date:'medium'}}</p>
             <div class="float-left" style="margin-bottom: 30px; margin-top: 20px;">
                 <button class="btn btn-primary" style="margin-right: 15px;" *ngIf="(!isCreator && !isLiked)"
                     (click)="onLike()">Like</button>
