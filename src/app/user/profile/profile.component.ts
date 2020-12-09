@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { UserService } from '../user.service';
 
 @Component({
@@ -8,12 +9,22 @@ import { UserService } from '../user.service';
 })
 export class ProfileComponent implements OnInit {
   user;
-  constructor(private userService: UserService) { }
+  constructor(
+    private userService: UserService,
+    private router: Router,
+    ) { }
 
   ngOnInit(): void {
     this.userService.user.subscribe(userObj => {
       this.user = userObj;
     })  
+    console.log(this.user);
+    
+  }
+
+  onItem(post){
+    console.log(post);
+    this.router.navigate(['posts/:id', post.objectId]);
   }
 
 }

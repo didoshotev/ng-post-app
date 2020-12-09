@@ -1,9 +1,11 @@
 <div class="container">
+    <div class="float-right" style="margin-top: 35px;">
+        <button [routerLink]="['/']" class="btn btn-primary">Back</button>
+        </div>
     <div class="row">
         <div class="float-left">
             <img src="../../../assets/images/default-profile-picture1-744x744.jpg" width="300px">
         </div>
-
         <div class="col-md-offset-2 col-md-8 col-lg-offset-3 col-lg-6">
             <h2>{{user.name}}</h2>
             <hr>
@@ -14,10 +16,18 @@
                         <ul class="list-group" *ngFor="let post of user.postsLiked">
                             <li class="list-group-item">{{post.title}}</li>
                         </ul>
-                       
                     </div>
+                    <!-- <div class="col-xs-12 col-sm-8">
+                        <h5>Liked Posts:</h5>
+                        <div class="list-group" *ngFor="let post of user.postsLiked">
+                            <a [routerLink]="['/posts']" class="list-group-item list-group-item-action">
+                                {{post.title}}
+                            </a>
+                        </div>
+                    </div> -->
                 </div>
             </div>
         </div>
     </div>
+
 </div>
