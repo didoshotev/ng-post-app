@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { title } from 'process';
 import { stringify } from 'querystring';
 import { Subscribable, Subscription } from 'rxjs';
-import { filter } from 'rxjs/operators';
+import { filter, tap } from 'rxjs/operators';
+import { UserService } from 'src/app/user/user.service';
 
 import { PostService } from '../post.service';
 
@@ -13,18 +14,23 @@ import { PostService } from '../post.service';
   templateUrl: './post-create.component.html',
   styleUrls: ['./post-create.component.css']
 })
-export class PostCreateComponent implements OnInit {
+export class PostCreateComponent implements OnInit, OnDestroy {
   postForm: FormGroup;
   currentId;
   currentPost;
   editMode = false;
   paramsId;
-  postSubscription: Subscription;
+
+  postResolveData;
+
+  user;
+  userSubscription: Subscription;
 
   constructor(
     private postService: PostService,
     private router: Router,
     private currRoute: ActivatedRoute,
+    private userService: UserService
   ) { }
 
   ngOnInit(): void {
@@ -37,6 +43,10 @@ export class PostCreateComponent implements OnInit {
         }
       }
     )
+    this.userSubscription = this.userService.user.subscribe(user => {
+      this.user = user;
+    })
+    this.postResolveData = this.currRoute.snapshot.data.postData;
     this.initForm();
   }
 
@@ -45,26 +55,17 @@ export class PostCreateComponent implements OnInit {
     let currentOwner = JSON.parse(localStorage.getItem('userData'));
     title = title.charAt(0).toUpperCase() + title.slice(1);
 
-    if (this.editMode === true) { // get likes first
-      let newData = {
-        title,
-        type,
-        imageUrl,
-        textContent,
-        likes: this.currentPost.likes,
-        ownerId: this.currentPost.ownerId
-      }
-
-      //this.dataStorage.editPostById(this.currentPost.objectId, newData);
+    if (this.editMode === true) { 
       this.postService.editPostById(
         this.currentId, {
           title, type, imageUrl, textContent, ownerId: currentOwner.objectId, likes: this.currentPost.likes
-      }).subscribe(data => {
-        
-      })
+      }).subscribe()
     } else {
       this.postService.createPost({ title, type, imageUrl, textContent});
-      //this.postService.addPostI({ title, type, imageUrl, textContent, ownerId: currentOwner.objectId, likes: 0 });
+      this.userService.updateUserCreatedPosts(currentOwner.objectId, { title, type, imageUrl, textContent})
+      .subscribe(newData => {
+        this.userService.user.next(newData);
+      });
     }
     this.onDiscard();
   }
@@ -79,20 +80,14 @@ export class PostCreateComponent implements OnInit {
     let imageUrl = "";
     let textContent = "";
 
+    if (this.editMode === true) {
+      title = this.postResolveData.title;
+      title = title.charAt(0).toUpperCase() + title.slice(1);
 
-
-    // if (this.editMode === true) {
-    //   const post = this.postService.getPostById(this.currentId);
-    //   //const post = this.postService.getPostByIndex(this.currentId);
-    //   this.currentPost = post;
-
-    //   title = post.title;
-    //   title = title.charAt(0).toUpperCase() + title.slice(1);
-
-    //   type = post.type;
-    //   imageUrl = post.imageUrl;
-    //   textContent = post.textContent;
-    // }
+      type = this.postResolveData.type;
+      imageUrl = this.postResolveData.imageUrl;
+      textContent = this.postResolveData.textContent;
+    }
 
     this.postForm = new FormGroup({
       'title': new FormControl(title, [Validators.required]),
@@ -100,5 +95,9 @@ export class PostCreateComponent implements OnInit {
       'imageUrl': new FormControl(imageUrl, [Validators.required]),
       'textContent': new FormControl(textContent, [Validators.required]),
     })
+  }
+
+  ngOnDestroy() {
+    this.userSubscription.unsubscribe();
   }
 }
