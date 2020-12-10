@@ -26,7 +26,6 @@ Backendless.initApp(environment.backendless.APP_ID, environment.backendless.API_
     HomeModule,
     PostModule
   ],
-  providers: [],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

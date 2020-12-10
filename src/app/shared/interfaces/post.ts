@@ -7,5 +7,5 @@ export interface IPost extends IBase {
     title: string,
     type: string,
     textContent: string,
-    creatorId: string,
+    ownerId: string,
 }

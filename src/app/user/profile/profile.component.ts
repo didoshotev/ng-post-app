@@ -18,12 +18,9 @@ export class ProfileComponent implements OnInit {
     this.userService.user.subscribe(userObj => {
       this.user = userObj;
     })  
-    console.log(this.user);
-    
   }
 
   onItem(post){
-    console.log(post);
     this.router.navigate(['posts/:id', post.objectId]);
   }
 

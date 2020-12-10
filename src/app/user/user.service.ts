@@ -75,7 +75,8 @@ export class UserService {
 
     autoLogin() {
         const userData = JSON.parse(localStorage.getItem('userData'));
-
+        
+        
         if (!userData) {
             return;
         }
@@ -111,6 +112,43 @@ export class UserService {
         this.tokenExpirationTimer = setTimeout(() => {
             this.logout();
         }, expirationDuration)
+    }
+
+    updateUserCreatedPosts(userId, post) {
+        const currentUser = JSON.parse(localStorage.getItem('userData'));
+        if (!currentUser.token) {
+            return
+        }
+        this.userToken = currentUser.token;
+        let headers = new HttpHeaders();
+        this.headerToAppend(headers)
+        
+        let newObj = [];
+        let createdPosts = currentUser.createdPosts
+        createdPosts.map(item => newObj.push(item))
+        newObj.push({ postId: currentUser.objectId, title: post.title });
+
+        let newUserData = {
+            email: currentUser.email,
+            name: currentUser.name,
+            objectId: currentUser.objectId,
+            token: currentUser.token,
+            createdPosts: newObj,
+            postsLiked: currentUser.postsLiked
+        }
+        localStorage.setItem('userData', JSON.stringify(newUserData));
+
+        return this.http.put(
+            `https://api.backendless.com/66BE35C3-B35F-ED2B-FFA7-FC85EE5A8E00/5F613093-6F99-4008-AAB6-9B36E5199013/users/${userId}`,
+            {
+                'postsCreated': newObj
+            },
+            {
+                headers: headers
+            }
+        ).pipe(
+            catchError(this.handleError),
+        ) 
     }
 
     updateUserLikedPosts(userId, post) {

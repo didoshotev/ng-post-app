@@ -44,10 +44,7 @@ export class PostService {
             tap(response => {
                 console.log('Post successsfully created!');
             })
-        ).subscribe(() => {
-            let posts = this.getAllPosts().subscribe(data => {
-            })
-        })
+        ).subscribe()
     }
 
     getAllPosts() {
