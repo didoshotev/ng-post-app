@@ -3,10 +3,34 @@
     <div id="formContent">
       <form [formGroup]="mainForm" (ngSubmit)="onSubmit()">
         <input type="text" class="fadeIn second" name="email" formControlName="email" placeholder="email">
+        <div *ngIf="!mainForm.get('email').valid && mainForm.get('email').touched"
+        style="font-size: 15px; color: rgb(167, 168, 167)">
+              This email is invalid!
+        </div>
+        <!-- <span *ngIf="mainForm.get('userData.email').errors['invalidEmail']">
+          This 
+        </span> -->
         <input type="text" class="fadeIn second" name="username" formControlName="username" placeholder="username">
-        <input type="password" class="fadeIn third" name="password" formControlName="password" placeholder="password">
-        <input type="password" class="fadeIn third" name="repeatPassword" formControlName="repeatPassword" placeholder="repeat password">
-        <button class="btn btn-primary" style="margin-bottom: 20px; margin-top: 20px;">Register</button>
+        <div *ngIf="!mainForm.get('username').valid && mainForm.get('username').touched"
+        style="font-size: 15px; color: rgb(167, 168, 167)">
+              This username is invalid!
+        </div>
+        <div formGroupName="passwords">
+          <input type="password" class="fadeIn third" name="password" formControlName="password" placeholder="password">
+          <div *ngIf="!mainForm.get('passwords.password').valid && mainForm.get('passwords.password').touched"
+        style="font-size: 15px; color: rgb(167, 168, 167)">
+              Password must be atleast 6 characters
+        </div>
+          <input type="password" class="fadeIn third" name="repeatPassword" formControlName="repeatPassword" placeholder="repeat password">
+          <div style="font-size: 15px; color: rgb(167, 168, 167)" 
+          *ngIf="mainForm.get(['passwords','password']).value != mainForm.get(['passwords','repeatPassword']).value &&
+          mainForm.get(['passwords','repeatPassword']).value != false && mainForm.get(['passwords', 'repeatPassword']).touched">
+            Passwords does not match</div>
+        </div>
+        <button
+        class="btn btn-primary" style="margin-bottom: 20px; margin-top: 20px;"
+        [disabled]="mainForm.status === 'INVALID'"
+        >Register</button>
       </form>
       <!-- Remind Passowrd -->
       <div id="formFooter">

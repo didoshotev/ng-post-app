@@ -3,8 +3,15 @@
     <div id="formContent">
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
         <input type="text" id="login" class="fadeIn second" name="login" formControlName="email" placeholder="email">
+        <div *ngIf="!loginForm.get('email').valid && loginForm.get('email').touched"
+        style="font-size: 15px; color: rgb(167, 168, 167)">
+              This email is invalid!
+        </div>
         <input type="password" id="password" class="fadeIn third" name="login" formControlName="password" placeholder="password">
-        <button  class="btn btn-primary" style="margin-bottom: 20px; margin-top: 20px;">Log In</button>
+        <button 
+        class="btn btn-primary" style="margin-bottom: 20px; margin-top: 20px;"
+        [disabled]="loginForm.status === 'INVALID'"
+        >Log In</button>
       </form>
       <div id="formFooter">
         <a [routerLink]="['/user/register']" class="underlineHover" href="#">Don't have an account?</a>
