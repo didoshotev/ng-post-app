@@ -2,7 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { mergeMap, tap } from 'rxjs/operators';
 import { UserService } from '../user.service';
+<<<<<<< HEAD
 import { CustomValidators } from './custom-validator'
+=======
+import { CustomValidators } from './custom-validators'
+
+>>>>>>> eb52c9df40334add5289f8c04ae574c2654b8856
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
@@ -16,6 +21,10 @@ export class RegisterComponent implements OnInit {
 
   ngOnInit(): void {
     this.onInitForm();
+<<<<<<< HEAD
+=======
+
+>>>>>>> eb52c9df40334add5289f8c04ae574c2654b8856
   }
 
   onSubmit() {
