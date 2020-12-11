@@ -1,5 +1,4 @@
 <div class="wrapper fadeInDown">
-<<<<<<< HEAD
   <h2>Sign Up</h2>
   <div id="formContent">
     <form [formGroup]="mainForm" (ngSubmit)="onSubmit()">
@@ -28,44 +27,6 @@
           *ngIf="mainForm.get(['passwords','password']).value != mainForm.get(['passwords','repeatPassword']).value &&
           mainForm.get(['passwords','repeatPassword']).value != false && mainForm.get(['passwords', 'repeatPassword']).touched">
           Passwords does not match</div>
-=======
-    <h2>Sign Up</h2>
-    <div id="formContent">
-      <form [formGroup]="mainForm" (ngSubmit)="onSubmit()">
-        <input type="text" class="fadeIn second" name="email" formControlName="email" placeholder="email">
-        <div *ngIf="!mainForm.get('email').valid && mainForm.get('email').touched"
-        style="font-size: 15px; color: rgb(167, 168, 167)">
-              This email is invalid!
-        </div>
-        <!-- <span *ngIf="mainForm.get('userData.email').errors['invalidEmail']">
-          This 
-        </span> -->
-        <input type="text" class="fadeIn second" name="username" formControlName="username" placeholder="username">
-        <div *ngIf="!mainForm.get('username').valid && mainForm.get('username').touched"
-        style="font-size: 15px; color: rgb(167, 168, 167)">
-              This username is invalid!
-        </div>
-        <div formGroupName="passwords">
-          <input type="password" class="fadeIn third" name="password" formControlName="password" placeholder="password">
-          <div *ngIf="!mainForm.get('passwords.password').valid && mainForm.get('passwords.password').touched"
-        style="font-size: 15px; color: rgb(167, 168, 167)">
-              Password must be atleast 6 characters
-        </div>
-          <input type="password" class="fadeIn third" name="repeatPassword" formControlName="repeatPassword" placeholder="repeat password">
-          <div style="font-size: 15px; color: rgb(167, 168, 167)" 
-          *ngIf="mainForm.get(['passwords','password']).value != mainForm.get(['passwords','repeatPassword']).value &&
-          mainForm.get(['passwords','repeatPassword']).value != false && mainForm.get(['passwords', 'repeatPassword']).touched">
-            Passwords does not match</div>
-        </div>
-        <button
-        class="btn btn-primary" style="margin-bottom: 20px; margin-top: 20px;"
-        [disabled]="mainForm.status === 'INVALID'"
-        >Register</button>
-      </form>
-      <!-- Remind Passowrd -->
-      <div id="formFooter">
-        <a [routerLink]="['/user/login']" class="underlineHover" style="cursor: pointer;">Already have an account?</a>
->>>>>>> eb52c9df40334add5289f8c04ae574c2654b8856
       </div>
       <button class="btn btn-primary" style="margin-bottom: 20px; margin-top: 20px;"
         [disabled]="mainForm.status === 'INVALID'">Register</button>

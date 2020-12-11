@@ -1,4 +1,4 @@
-import { IPost, IUser } from '../shared/interfaces';
+import { IUser } from '../shared/interfaces';
 
 export interface IPostInfo {
     title: string;

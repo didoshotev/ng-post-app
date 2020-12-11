@@ -66,7 +66,6 @@ export class PostCreateComponent implements OnInit, OnDestroy {
     } else {
       this.postService.createPost({ title, type, imageUrl, textContent }).pipe<any>(
         mergeMap(data => {
-          console.log(data);
           let objectId = data.objectId;
           return this.userService.updateUserCreatedPosts(currentOwner.objectId, { title, type, imageUrl, textContent}, objectId)
         })
