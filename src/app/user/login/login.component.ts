@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { tap } from 'rxjs/operators';
 import { UserService } from '../user.service';
 
 @Component({
@@ -14,14 +15,20 @@ export class LoginComponent implements OnInit {
 
   ngOnInit(): void {
     this.loginForm = new FormGroup({
-      'email': new FormControl(null),
-      'password': new FormControl(null)
+      'email': new FormControl(null, [Validators.required, Validators.email]),
+      'password': new FormControl(null, [Validators.required])
     })
   }
 
   onSubmit() {
     let {email, password} = this.loginForm.value;
-    this.userService.login(email, password).subscribe(userObj => {
+    this.userService.login(email, password).pipe(
+      tap(response => {
+        console.log(response);
+        
+      })
+    )
+    .subscribe(userObj => {
       this.userService.user.next(userObj);  // passing initial user state
     })
   }

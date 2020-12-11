@@ -87,7 +87,6 @@ export class UserService {
             userData.token,
             userData.createdPosts,
             userData.postsLiked,
-            userData.savedPosts,
         )
         if (loadedUser.token) {
             this.user.next(loadedUser);
@@ -199,7 +198,6 @@ export class UserService {
             token,
             postsCreated,
             postsLiked,
-            savedPosts,
         )
         
         this.user.next(currentUser);
@@ -211,8 +209,8 @@ export class UserService {
 
     private handleError(errorRes: HttpErrorResponse) {
         let errorMessage = 'An unknown error occurred!';
-        if (!errorRes.error || !errorRes.error.error) {
-            return throwError(errorMessage);
+        if (errorRes.error.code === 3003) {
+            errorMessage = errorRes.error.message;
         }
         return throwError(errorMessage);
     }
