@@ -56,7 +56,7 @@ export class PostDetailComponent implements OnInit, OnDestroy {
     let likes = +this.currentPost.likes;
     likes++
     this.isLiked = true;
-    this.postService.editPostById(this.currentPost.objectId, { likes }).subscribe()
+    this.postService.editPostById(this.currentPost.objectId, { likes })
     this.userService.updateUserLikedPosts(this.currentUser.objectId, this.currentPost).subscribe
     (newData => {
       this.userService.user.next(newData) //update user BehaviourSubject

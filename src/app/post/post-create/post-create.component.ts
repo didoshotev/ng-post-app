@@ -4,7 +4,7 @@ import { ActivatedRoute, Params, Router } from '@angular/router';
 import { title } from 'process';
 import { stringify } from 'querystring';
 import { Subscribable, Subscription } from 'rxjs';
-import { filter, tap } from 'rxjs/operators';
+import { filter, mergeMap, tap } from 'rxjs/operators';
 import { UserService } from 'src/app/user/user.service';
 
 import { PostService } from '../post.service';
@@ -38,7 +38,7 @@ export class PostCreateComponent implements OnInit, OnDestroy {
       (params: Params) => {
         this.currentId = params['id'];
         this.editMode = params['id'] != null;
-        if(this.editMode) {
+        if (this.editMode) {
           this.currentPost = this.postService.getPostById(this.currentId);
         }
       }
@@ -55,17 +55,22 @@ export class PostCreateComponent implements OnInit, OnDestroy {
     let currentOwner = JSON.parse(localStorage.getItem('userData'));
     title = title.charAt(0).toUpperCase() + title.slice(1);
 
-    if (this.editMode === true) { 
+    if (this.editMode === true) {
       this.postService.editPostById(
         this.currentId, {
-          title, type, imageUrl, textContent, ownerId: currentOwner.objectId, likes: this.currentPost.likes
-      }).subscribe()
+        title, type, imageUrl, textContent, ownerId: currentOwner.objectId, likes: this.currentPost.likes
+      })
+      this.userService.updateUserEditedPosts( currentOwner.objectId, {
+        title, type, imageUrl, textContent, ownerId: currentOwner.objectId, likes: this.currentPost.likes
+      }, this.currentId).subscribe()
     } else {
-      this.postService.createPost({ title, type, imageUrl, textContent});
-      this.userService.updateUserCreatedPosts(currentOwner.objectId, { title, type, imageUrl, textContent})
-      .subscribe(newData => {
-        this.userService.user.next(newData);
-      });
+      this.postService.createPost({ title, type, imageUrl, textContent }).pipe<any>(
+        mergeMap(data => {
+          console.log(data);
+          let objectId = data.objectId;
+          return this.userService.updateUserCreatedPosts(currentOwner.objectId, { title, type, imageUrl, textContent}, objectId)
+        })
+      ).subscribe()
     }
     this.onDiscard();
   }
@@ -82,7 +87,6 @@ export class PostCreateComponent implements OnInit, OnDestroy {
 
     if (this.editMode === true) {
       title = this.postResolveData.title;
-      title = title.charAt(0).toUpperCase() + title.slice(1);
 
       type = this.postResolveData.type;
       imageUrl = this.postResolveData.imageUrl;

@@ -1,6 +1,10 @@
 
 /* BASIC */
 
+input.ng-invalid.ng-touched{
+  border-bottom: 1px solid red;
+}
+
 html {
     background-color: #56baed;
   }

@@ -1,7 +1,6 @@
 import { HttpClient, HttpErrorResponse, HttpHeaders, } from '@angular/common/http';
 import { Injectable } from "@angular/core";
 import { Router } from '@angular/router';
-import Backendless from 'backendless';
 import { BehaviorSubject } from 'rxjs';
 import { throwError } from 'rxjs/internal/observable/throwError';
 import { catchError, tap } from 'rxjs/operators';
@@ -87,7 +86,6 @@ export class UserService {
             userData.token,
             userData.createdPosts,
             userData.postsLiked,
-            userData.savedPosts,
         )
         if (loadedUser.token) {
             this.user.next(loadedUser);
@@ -114,7 +112,7 @@ export class UserService {
         }, expirationDuration)
     }
 
-    updateUserCreatedPosts(userId, post) {
+    updateUserCreatedPosts(userId, post, objectId) {
         const currentUser = JSON.parse(localStorage.getItem('userData'));
         if (!currentUser.token) {
             return
@@ -122,11 +120,11 @@ export class UserService {
         this.userToken = currentUser.token;
         let headers = new HttpHeaders();
         this.headerToAppend(headers)
-        
+
         let newObj = [];
         let createdPosts = currentUser.createdPosts
         createdPosts.map(item => newObj.push(item))
-        newObj.push({ postId: currentUser.objectId, title: post.title });
+        newObj.push({ postId: objectId, title: post.title });
 
         let newUserData = {
             email: currentUser.email,
@@ -138,7 +136,7 @@ export class UserService {
         }
         localStorage.setItem('userData', JSON.stringify(newUserData));
 
-        return this.http.put(
+        return this.http.put<any>(
             `https://api.backendless.com/66BE35C3-B35F-ED2B-FFA7-FC85EE5A8E00/5F613093-6F99-4008-AAB6-9B36E5199013/users/${userId}`,
             {
                 'postsCreated': newObj
@@ -148,6 +146,9 @@ export class UserService {
             }
         ).pipe(
             catchError(this.handleError),
+            tap(data => {
+                this.user.next(newUserData);
+            })
         ) 
     }
 
@@ -170,7 +171,7 @@ export class UserService {
             name: currentUser.name,
             objectId: currentUser.objectId,
             token: currentUser.token,
-            createdPosts: currentUser.createdPosts,
+            postsCreated: currentUser.createdPosts,
             postsLiked: newObj
         }
         localStorage.setItem('userData', JSON.stringify(newUserData));
@@ -188,6 +189,49 @@ export class UserService {
         )
     }
 
+    updateUserEditedPosts(userId, post, objectId) {
+        const currentUser = JSON.parse(localStorage.getItem('userData'));
+        if (!currentUser.token) {
+            return
+        }
+        this.userToken = currentUser.token;
+        let headers = new HttpHeaders();
+        this.headerToAppend(headers)
+
+        let newObj = [];
+        let createdPosts = currentUser.createdPosts
+        createdPosts.map(item =>  {
+            if(item.postId !== objectId) {
+                newObj.push(item)  
+            }
+         })
+        newObj.push({ postId: objectId, title: post.title });
+
+        let newUserData = {
+            email: currentUser.email,
+            name: currentUser.name,
+            objectId: currentUser.objectId,
+            token: currentUser.token,
+            createdPosts: newObj,
+            postsLiked: currentUser.postsLiked
+        }
+        localStorage.setItem('userData', JSON.stringify(newUserData));
+
+        return this.http.put(
+            `https://api.backendless.com/66BE35C3-B35F-ED2B-FFA7-FC85EE5A8E00/5F613093-6F99-4008-AAB6-9B36E5199013/users/${userId}`,
+            {
+                'postsCreated': newObj
+            },
+            {
+                headers: headers
+            }
+        ).pipe(
+            catchError(this.handleError),
+            tap(data => {
+                this.user.next(newUserData)
+            })
+        ) 
+    }
 
     private handleAuthentication(email: string, name: string, objectId: string, token: string, postsCreated, postsLiked, savedPosts) {
         let currentUser;
@@ -199,7 +243,6 @@ export class UserService {
             token,
             postsCreated,
             postsLiked,
-            savedPosts,
         )
         
         this.user.next(currentUser);
@@ -211,8 +254,8 @@ export class UserService {
 
     private handleError(errorRes: HttpErrorResponse) {
         let errorMessage = 'An unknown error occurred!';
-        if (!errorRes.error || !errorRes.error.error) {
-            return throwError(errorMessage);
+        if (errorRes.error.code === 3003) {
+            errorMessage = errorRes.error.message;
         }
         return throwError(errorMessage);
     }

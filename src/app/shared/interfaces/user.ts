@@ -1,11 +1,9 @@
-import { IBase } from './base';
-import { IPost } from './post';
+import { IPostInfo } from 'src/app/user/user.model'
 
 export interface IUser{
-  createdPosts: {};
   email: string;
   name: string;
   objectId: string;
-  postsLiked: [];
-  savedPosts: [];
+  postsLiked: IPostInfo[];
+  createdPosts: IPostInfo[];
 }

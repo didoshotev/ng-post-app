@@ -28,7 +28,7 @@ export class PostService {
         this.userToken = currentUser.token;
         let headers = new HttpHeaders();
         this.headerToAppend(headers)
-        return this.http.post(
+        return this.http.post<any>(
             'https://api.backendless.com/66BE35C3-B35F-ED2B-FFA7-FC85EE5A8E00/5F613093-6F99-4008-AAB6-9B36E5199013/data/post',
             {
                 ...data,
@@ -44,7 +44,7 @@ export class PostService {
             tap(response => {
                 console.log('Post successsfully created!');
             })
-        ).subscribe()
+        )
     }
 
     getAllPosts() {
@@ -83,7 +83,7 @@ export class PostService {
                 console.log('Object edited');
                 
             })
-        )
+        ).subscribe()
     }
 
 
