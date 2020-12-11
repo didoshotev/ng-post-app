@@ -1,7 +1,6 @@
-import { Component,  OnInit } from '@angular/core';
-import { Observable } from 'rxjs';
-import { shareReplay } from 'rxjs/operators';
-import { PostService } from '../post.service';
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { IPost } from '../../shared/interfaces/index'
 
 @Component({
   selector: 'app-post-list',
@@ -10,16 +9,16 @@ import { PostService } from '../post.service';
 })
 export class PostListComponent implements OnInit {
   post;
-  allPosts: Observable<any>;
+  allPosts: IPost[];
 
-  data
-  constructor(private postService: PostService) { }
+  postsListResolvedData
+  constructor(
+    private currRoute: ActivatedRoute
+  ) { }
 
   ngOnInit(): void {
-    this.allPosts = this.postService.getAllPosts().pipe(shareReplay(1))
-    
-    this.data = this.postService.getAllPosts().subscribe(data => {
-    })
+    //this.allPosts = this.postService.getAllPosts().pipe(shareReplay(1))
+    this.allPosts = this.currRoute.snapshot.data.postsList;
   }
 
 }

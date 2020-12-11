@@ -28,19 +28,20 @@ export class UserService {
                 'password': password,
                 'name': username,
                 'postsLiked': [],
-                'postsCreated': [],
+                'createdPosts': [],
 
             },
         ).pipe(
             catchError(this.handleError),
             tap(response => {
                 console.log('Registered Successfully');
+                console.log(response);
                 this.handleAuthentication(
                     response.email,
                     response.name,
                     response.objectId,
                     response['user-token'],
-                    response.postsCreated,
+                    response.createdPosts,
                     response.postsLiked,
                     response.savedPosts,
                 )
@@ -64,7 +65,7 @@ export class UserService {
                     response.name,
                     response.objectId,
                     response['user-token'],
-                    response.postsCreated,
+                    response.createdPosts,
                     response.postsLiked,
                     response.savedPosts,
                 )
@@ -122,6 +123,8 @@ export class UserService {
         this.headerToAppend(headers)
 
         let newObj = [];
+        console.log(currentUser);
+        
         let createdPosts = currentUser.createdPosts
         createdPosts.map(item => newObj.push(item))
         newObj.push({ postId: objectId, title: post.title });
@@ -139,7 +142,7 @@ export class UserService {
         return this.http.put<any>(
             `https://api.backendless.com/66BE35C3-B35F-ED2B-FFA7-FC85EE5A8E00/5F613093-6F99-4008-AAB6-9B36E5199013/users/${userId}`,
             {
-                'postsCreated': newObj
+                'createdPosts': newObj
             },
             {
                 headers: headers
@@ -171,7 +174,7 @@ export class UserService {
             name: currentUser.name,
             objectId: currentUser.objectId,
             token: currentUser.token,
-            postsCreated: currentUser.createdPosts,
+            createdPosts: currentUser.createdPosts,
             postsLiked: newObj
         }
         localStorage.setItem('userData', JSON.stringify(newUserData));
@@ -220,7 +223,7 @@ export class UserService {
         return this.http.put(
             `https://api.backendless.com/66BE35C3-B35F-ED2B-FFA7-FC85EE5A8E00/5F613093-6F99-4008-AAB6-9B36E5199013/users/${userId}`,
             {
-                'postsCreated': newObj
+                'createdPosts': newObj
             },
             {
                 headers: headers
@@ -233,7 +236,7 @@ export class UserService {
         ) 
     }
 
-    private handleAuthentication(email: string, name: string, objectId: string, token: string, postsCreated, postsLiked, savedPosts) {
+    private handleAuthentication(email: string, name: string, objectId: string, token: string, createdPosts, postsLiked, savedPosts) {
         let currentUser;
         // const expirationDate = new Date(new Date().getTime() + 3600 * 1000);
         currentUser = new User(
@@ -241,7 +244,7 @@ export class UserService {
             name,
             objectId,
             token,
-            postsCreated,
+            createdPosts,
             postsLiked,
         )
         

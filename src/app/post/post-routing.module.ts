@@ -4,11 +4,15 @@ import { AuthGuard } from '../user/auth.guard';
 import { PostCreateComponent } from './post-create/post-create.component';
 import { PostDetailComponent } from './post-detail/post-detail.component';
 import { PostListComponent } from './post-list/post-list.component';
+import { PostListResolver } from './post-list/postList-resolver';
 
 
 const routes: Routes = [
     {
-        path: 'posts', component: PostListComponent
+        path: 'posts', component: PostListComponent,
+        resolve: {
+            postsList: PostListResolver
+        }
     },
     {
         path: 'posts/create', canActivate: [AuthGuard], component: PostCreateComponent
