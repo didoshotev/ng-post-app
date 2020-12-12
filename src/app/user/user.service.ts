@@ -123,7 +123,6 @@ export class UserService {
         this.headerToAppend(headers)
 
         let newObj = [];
-        console.log(currentUser);
         
         let createdPosts = currentUser.createdPosts
         createdPosts.map(item => newObj.push(item))
@@ -151,6 +150,7 @@ export class UserService {
             catchError(this.handleError),
             tap(data => {
                 this.user.next(newUserData);
+                this.router.navigate(['/posts'])
             })
         ) 
     }
@@ -232,6 +232,50 @@ export class UserService {
             catchError(this.handleError),
             tap(data => {
                 this.user.next(newUserData)
+            })
+        ) 
+    }
+
+    updateUserDeletedPost(userId, post, objectId) {
+        const currentUser = JSON.parse(localStorage.getItem('userData'));
+        if (!currentUser.token) {
+            return
+        }
+        this.userToken = currentUser.token;
+        let headers = new HttpHeaders();
+        this.headerToAppend(headers)
+
+        let newObj = [];
+        let createdPosts = currentUser.createdPosts
+        createdPosts.map(item =>  {
+            if(item.postId !== objectId) {
+                newObj.push(item)  
+            }
+         })
+
+         let newUserData = {
+            email: currentUser.email,
+            name: currentUser.name,
+            objectId: currentUser.objectId,
+            token: currentUser.token,
+            createdPosts: newObj,
+            postsLiked: currentUser.postsLiked
+        }
+        localStorage.setItem('userData', JSON.stringify(newUserData));
+
+        return this.http.put(
+            `https://api.backendless.com/66BE35C3-B35F-ED2B-FFA7-FC85EE5A8E00/5F613093-6F99-4008-AAB6-9B36E5199013/users/${userId}`,
+            {
+                'createdPosts': newObj
+            },
+            {
+                headers: headers
+            }
+        ).pipe(
+            catchError(this.handleError),
+            tap(data => {
+                this.user.next(newUserData);
+                this.router.navigate(['/']);
             })
         ) 
     }

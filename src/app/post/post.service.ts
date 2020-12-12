@@ -9,20 +9,16 @@ import { catchError, tap } from 'rxjs/operators';
 
 export class PostService {
     userToken;
-    
+
     postsChanged = new Subject<any>();
     private posts = [];
 
     constructor(private http: HttpClient) { }
 
-    setPosts(posts) {
-        this.posts = posts.sort((a, b) => a.title.localeCompare(b.title));
-        this.postsChanged.next(this.posts.slice());
-    }
 
     createPost(data) {
         const currentUser = JSON.parse(localStorage.getItem('userData'));
-        if(!currentUser.token) {
+        if (!currentUser.token) {
             return
         }
         this.userToken = currentUser.token;
@@ -63,9 +59,9 @@ export class PostService {
         )
     }
 
-    editPostById(id, newData){
+    editPostById(id, newData) {
         const currentUser = JSON.parse(localStorage.getItem('userData'));
-        if(!currentUser.token) {
+        if (!currentUser.token) {
             return
         }
         this.userToken = currentUser.token;
@@ -81,7 +77,29 @@ export class PostService {
             catchError(this.handleError),
             tap(newObj => {
                 console.log('Object edited');
-                
+
+            })
+        ).subscribe()
+    }
+
+    deletePostById(id) {
+        const currentUser = JSON.parse(localStorage.getItem('userData'));
+        if (!currentUser.token) {
+            return
+        }
+        this.userToken = currentUser.token;
+        let headers = new HttpHeaders();
+        this.headerToAppend(headers)
+
+        return this.http.delete(
+            `https://api.backendless.com/66BE35C3-B35F-ED2B-FFA7-FC85EE5A8E00/5F613093-6F99-4008-AAB6-9B36E5199013/data/post/${id}`,
+            {
+                headers: headers
+            }
+        ).pipe(
+            catchError(this.handleError),
+            tap(response => {
+                console.log('Post is deleted!');
             })
         ).subscribe()
     }

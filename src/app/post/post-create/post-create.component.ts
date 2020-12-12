@@ -71,7 +71,7 @@ export class PostCreateComponent implements OnInit, OnDestroy {
         })
       ).subscribe()
     }
-    this.onDiscard();
+    
   }
 
   onDiscard() {

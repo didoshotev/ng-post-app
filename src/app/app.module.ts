@@ -10,13 +10,15 @@ import { UserModule } from './user/user.module';
 import { CoreModule } from './core/core.module';
 import { HomeModule } from './home/home.module';
 import { PostModule } from './post/post.module';
+import { NotFoundComponent } from './not-found/not-found.component';
 
 Backendless.initApp(environment.backendless.APP_ID, environment.backendless.API_KEY);
 
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    NotFoundComponent
   ],
   imports: [
     BrowserModule,

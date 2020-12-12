@@ -63,6 +63,13 @@ export class PostDetailComponent implements OnInit, OnDestroy {
     });
   }
 
+  onDelete() {
+    //this.postService.
+    this.postService.deletePostById(this.currentPostId);
+    this.userService.updateUserDeletedPost(this.currentUser.objectId, this.currentPost, this.currentPostId)
+    .subscribe();
+  }
+
   ngOnDestroy() {
     this.currPostSubscription.unsubscribe();
   }

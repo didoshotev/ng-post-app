@@ -21,9 +21,12 @@ export class PostListResolver implements Resolve<IPost> {
     ): Observable<any>|Promise<any>|any {
 
         return this.postService.getAllPosts().pipe(catchError(error => {
+            console.log('Loading posts...');
+
                 return EMPTY
             }), mergeMap(data => {
                 if (data) {
+                    
                     return of(data)
                 } else {
                     return EMPTY
