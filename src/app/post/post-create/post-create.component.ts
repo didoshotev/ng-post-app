@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { title } from 'process';
@@ -93,7 +93,7 @@ export class PostCreateComponent implements OnInit, OnDestroy {
       'title': new FormControl(title, [Validators.required]),
       'type': new FormControl(type, [Validators.required]),
       'imageUrl': new FormControl(imageUrl),
-      'textContent': new FormControl(textContent, [Validators.required]),
+      'textContent': new FormControl(textContent, [Validators.required, Validators.maxLength(1000), Validators.minLength(20)]),
     })
   }
 

@@ -5,13 +5,14 @@ import { BehaviorSubject } from 'rxjs';
 import { throwError } from 'rxjs/internal/observable/throwError';
 import { catchError, tap } from 'rxjs/operators';
 import { User } from './user.model';
+import { environment } from '../../environments/environment'
 
 @Injectable({
     providedIn: 'root'
 })
 export class UserService {
     userToken;
-    logInError = false;
+    private BASE_URL = environment.backendless.BASE_URL;
 
     user = new BehaviorSubject<any>(null);
     private tokenExpirationTimer: any;
@@ -23,7 +24,7 @@ export class UserService {
 
     register(email: string, password: string, username: string) {
         return this.http.post<any>(
-            'https://api.backendless.com/66BE35C3-B35F-ED2B-FFA7-FC85EE5A8E00/5F613093-6F99-4008-AAB6-9B36E5199013/users/register',
+            `${this.BASE_URL}/users/register`,
             {
                 'email': email,
                 'password': password,
@@ -51,7 +52,7 @@ export class UserService {
 
     login(email: string, password: string) {
         return this.http.post<any>(
-            'https://api.backendless.com/66BE35C3-B35F-ED2B-FFA7-FC85EE5A8E00/5F613093-6F99-4008-AAB6-9B36E5199013/users/login',
+            `${this.BASE_URL}/users/login`,
             {
                 'login': email,
                 password
@@ -106,29 +107,18 @@ export class UserService {
         this.tokenExpirationTimer = null;
     }
 
-
     autoLogout(expirationDuration: number) {
         //console.log(expirationDuration);
         this.tokenExpirationTimer = setTimeout(() => {
-            console.log('Log out at');
-            console.log(Date.now());
-            console.log(Date.UTC);
-            
             this.logout();
         }, expirationDuration)
     }
 
     updateUserCreatedPosts(userId, post, objectId) {
         const currentUser = JSON.parse(localStorage.getItem('userData'));
-        if (!currentUser.token) {
-            return
-        }
-        this.userToken = currentUser.token;
-        let headers = new HttpHeaders();
-        this.headerToAppend(headers)
+        let headers = this.setTokenHeaders(currentUser);
 
         let newObj = [];
-
         let createdPosts = currentUser.createdPosts
         createdPosts.map(item => newObj.push(item))
         newObj.push({ postId: objectId, title: post.title });
@@ -144,7 +134,7 @@ export class UserService {
         localStorage.setItem('userData', JSON.stringify(newUserData));
 
         return this.http.put<any>(
-            `https://api.backendless.com/66BE35C3-B35F-ED2B-FFA7-FC85EE5A8E00/5F613093-6F99-4008-AAB6-9B36E5199013/users/${userId}`,
+            `${this.BASE_URL}/users/${userId}`,
             {
                 'createdPosts': newObj
             },
@@ -162,12 +152,7 @@ export class UserService {
 
     updateUserLikedPosts(userId, post) {
         const currentUser = JSON.parse(localStorage.getItem('userData'));
-        if (!currentUser.token) {
-            return
-        }
-        this.userToken = currentUser.token;
-        let headers = new HttpHeaders();
-        this.headerToAppend(headers)
+        let headers = this.setTokenHeaders(currentUser);
 
         let newObj = [];
         let postsLiked = currentUser.postsLiked
@@ -185,7 +170,7 @@ export class UserService {
         localStorage.setItem('userData', JSON.stringify(newUserData));
 
         return this.http.put(
-            `https://api.backendless.com/66BE35C3-B35F-ED2B-FFA7-FC85EE5A8E00/5F613093-6F99-4008-AAB6-9B36E5199013/users/${userId}`,
+            `${this.BASE_URL}/users/${userId}`,
             {
                 'postsLiked': newObj
             },
@@ -199,12 +184,7 @@ export class UserService {
 
     updateUserEditedPosts(userId, post, objectId) {
         const currentUser = JSON.parse(localStorage.getItem('userData'));
-        if (!currentUser.token) {
-            return
-        }
-        this.userToken = currentUser.token;
-        let headers = new HttpHeaders();
-        this.headerToAppend(headers)
+        let headers = this.setTokenHeaders(currentUser);
 
         let newObj = [];
         let createdPosts = currentUser.createdPosts
@@ -226,7 +206,7 @@ export class UserService {
         localStorage.setItem('userData', JSON.stringify(newUserData));
 
         return this.http.put(
-            `https://api.backendless.com/66BE35C3-B35F-ED2B-FFA7-FC85EE5A8E00/5F613093-6F99-4008-AAB6-9B36E5199013/users/${userId}`,
+            `${this.BASE_URL}/users/${userId}`,
             {
                 'createdPosts': newObj
             },
@@ -244,12 +224,7 @@ export class UserService {
 
     updateUserDeletedPost(userId, post, objectId) {
         const currentUser = JSON.parse(localStorage.getItem('userData'));
-        if (!currentUser.token) {
-            return
-        }
-        this.userToken = currentUser.token;
-        let headers = new HttpHeaders();
-        this.headerToAppend(headers)
+        let headers = this.setTokenHeaders(currentUser);
 
         let newObj = [];
         let createdPosts = currentUser.createdPosts
@@ -270,7 +245,7 @@ export class UserService {
         localStorage.setItem('userData', JSON.stringify(newUserData));
 
         return this.http.put(
-            `https://api.backendless.com/66BE35C3-B35F-ED2B-FFA7-FC85EE5A8E00/5F613093-6F99-4008-AAB6-9B36E5199013/users/${userId}`,
+            `${this.BASE_URL}/users/${userId}`,
             {
                 'createdPosts': newObj
             },
@@ -305,9 +280,7 @@ export class UserService {
         this.router.navigate(['/home']);
     }
 
-
     private handleError(errorRes: HttpErrorResponse) {
-        this.logInError = true;
         let errorMessage = 'An unknown error occurred!';
         if (errorRes.error.code === 3003 || errorRes.error.code === 3002 || errorRes.error.code === 3011) {
             errorMessage = errorRes.error.message;
@@ -319,4 +292,13 @@ export class UserService {
         headers.append('Content-Type', 'application/json')
     }
 
+    private setTokenHeaders(currentUser) {
+        if (!currentUser.token) {
+            return
+        }
+        this.userToken = currentUser.token;
+        let headers = new HttpHeaders();
+        this.headerToAppend(headers)
+        return headers
+    }
 }

@@ -1,7 +1,8 @@
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Injectable } from "@angular/core";
 import { Subject, throwError } from 'rxjs';
-import { catchError, tap } from 'rxjs/operators';
+import { catchError } from 'rxjs/operators';
+import { environment } from '../../environments/environment';
 
 @Injectable({
     providedIn: 'root'
@@ -9,7 +10,7 @@ import { catchError, tap } from 'rxjs/operators';
 
 export class PostService {
     userToken;
-
+    private BASE_URL = environment.backendless.BASE_URL;
     postsChanged = new Subject<any>();
 
     constructor(private http: HttpClient) { }
@@ -20,7 +21,7 @@ export class PostService {
         let headers = this.setTokenHeaders(currentUser);
         
         return this.http.post<any>(
-            'https://api.backendless.com/66BE35C3-B35F-ED2B-FFA7-FC85EE5A8E00/5F613093-6F99-4008-AAB6-9B36E5199013/data/post',
+            `${this.BASE_URL}/data/post`,
             {
                 ...data,
                 'ownerId': currentUser.objectId,
@@ -32,15 +33,12 @@ export class PostService {
             }
         ).pipe(
             catchError(this.handleError),
-            tap(response => {
-                console.log('Post successsfully created!');
-            })
         )
     }
 
     getAllPosts() {
         return this.http.get(
-            'https://api.backendless.com/66BE35C3-B35F-ED2B-FFA7-FC85EE5A8E00/5F613093-6F99-4008-AAB6-9B36E5199013/data/post'
+            `${this.BASE_URL}/data/post`
         ).pipe(
             catchError(this.handleError)
         )
@@ -48,7 +46,7 @@ export class PostService {
 
     getPostById(id) {
         return this.http.get(
-            `https://api.backendless.com/66BE35C3-B35F-ED2B-FFA7-FC85EE5A8E00/5F613093-6F99-4008-AAB6-9B36E5199013/data/post/${id}`
+            `${this.BASE_URL}/data/post/${id}`
         ).pipe(
             catchError(this.handleError)
         )
@@ -59,7 +57,7 @@ export class PostService {
         let headers = this.setTokenHeaders(currentUser);
         
         return this.http.put(
-            `https://api.backendless.com/66BE35C3-B35F-ED2B-FFA7-FC85EE5A8E00/5F613093-6F99-4008-AAB6-9B36E5199013/data/post/${id}`,
+            `${this.BASE_URL}/data/post/${id}`,
             newData,
             {
                 headers: headers
@@ -74,7 +72,7 @@ export class PostService {
         let headers = this.setTokenHeaders(currentUser);
 
         return this.http.delete(
-            `https://api.backendless.com/66BE35C3-B35F-ED2B-FFA7-FC85EE5A8E00/5F613093-6F99-4008-AAB6-9B36E5199013/data/post/${id}`,
+            `${this.BASE_URL}/data/post/${id}`,
             {
                 headers: headers
             }
@@ -99,10 +97,9 @@ export class PostService {
     }
 
     private handleError(errorRes: HttpErrorResponse) {
-        console.log(errorRes);
         let errorMessage = 'An unknown error occurred!';
-        if (!errorRes.error || !errorRes.error.error) {
-            return throwError(errorMessage);
+        if (errorRes.error.code === 1001 || errorRes.error.code === 1009 || errorRes.error.code === 1011) {
+            errorMessage = errorRes.error.message;
         }
         return throwError(errorMessage);
     }

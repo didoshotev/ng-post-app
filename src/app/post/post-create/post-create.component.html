@@ -2,26 +2,41 @@
 <h4 *ngIf="!editMode">Create new post</h4>
 <hr>
 <form [formGroup]="postForm" (ngSubmit)="onSubmit()">
-    <div class="form-group">
-      <label for="title">Post Title</label>
-      <input type="text" class="form-control" formControlName="title">
+  <div class="form-group">
+    <label for="title">Post Title</label>
+    <input type="text" class="form-control" formControlName="title">
+    <div *ngIf="!postForm.get('title').valid && postForm.get('title').touched"
+      style="font-size: 15px; color: rgb(167, 168, 167)">
+      This title is invalid!
     </div>
-    <div class="form-group">
-      <label for="type">Type</label>
-      <select class="form-control" formControlName="type">
-        <option>Technology and Science</option>
-        <option>Entertainment and Gaming</option>
-        <option>Health and Wellness</option>
-      </select>
+  </div>
+  <div class="form-group">
+    <label for="type">Type</label>
+    <select class="form-control" formControlName="type">
+      <option>Technology and Science</option>
+      <option>Entertainment and Gaming</option>
+      <option>Health and Wellness</option>
+    </select>
+    <div *ngIf="!postForm.get('type').valid && postForm.get('type').touched"
+      style="font-size: 15px; color: rgb(167, 168, 167)">
+      This type is invalid!
     </div>
-    <div class="form-group">
-        <label for="imageUrl">Image URL</label>
-        <input type="text" class="form-control" formControlName="imageUrl">
-      </div>
-    <div class="form-group">
-      <label for="exampleFormControlTextarea1">Text Content</label>
-      <textarea class="form-control" rows="8" formControlName="textContent"></textarea>
+  </div>
+  <div class="form-group">
+    <label for="imageUrl">Image URL</label>
+    <input type="text" class="form-control" formControlName="imageUrl">
+  </div>
+  <div class="form-group">
+    <label for="exampleFormControlTextarea1">Text Content</label>
+    <textarea class="form-control" rows="8" formControlName="textContent" #text
+      ></textarea>
+      <div *ngIf="!postForm.get('textContent').valid && postForm.get('textContent').touched"
+      style="font-size: 15px; color: rgb(167, 168, 167)">
+      Text Content must be between 20 and 1000 letters
     </div>
-    <button type="submit" class="btn btn-success">Submit</button>
-    <button type="button" class="btn btn-danger" style="position: relative; left: 20px;" (click)="onDiscard()" >Discard</button>
-  </form>
+    <div>Letters: <span id="wordCount">{{ text.value.length }}</span></div>
+  </div>
+  <button type="submit" class="btn btn-success" [disabled]="postForm.status === 'INVALID'">Submit</button>
+  <button type="button" class="btn btn-danger" style="position: relative; left: 20px;"
+    (click)="onDiscard()">Discard</button>
+</form>
