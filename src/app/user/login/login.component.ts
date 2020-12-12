@@ -1,6 +1,7 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { tap } from 'rxjs/operators';
+import { catchError, tap } from 'rxjs/operators';
 import { UserService } from '../user.service';
 
 @Component({
@@ -10,6 +11,7 @@ import { UserService } from '../user.service';
 })
 export class LoginComponent implements OnInit {
   loginForm: FormGroup;
+  loginError: string = null;
 
   constructor(private userService: UserService) { }
 
@@ -21,14 +23,11 @@ export class LoginComponent implements OnInit {
   }
 
   onSubmit() {
-    let {email, password} = this.loginForm.value;
-      this.userService.login(email, password).pipe(
-        tap(response => {
-        })
+    let { email, password } = this.loginForm.value;
+    this.userService.login(email, password)
+      .subscribe(
+        res => this.userService.user.next(res),  // passing initial user state
+        err => this.loginError = err,
       )
-      .subscribe(userObj => {
-      this.userService.user.next(userObj);  // passing initial user state
-    })
   }
-
 }

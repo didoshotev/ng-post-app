@@ -1,5 +1,5 @@
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
-import { Injectable, OnInit } from "@angular/core";
+import { Injectable } from "@angular/core";
 import { Subject, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 
@@ -11,19 +11,14 @@ export class PostService {
     userToken;
 
     postsChanged = new Subject<any>();
-    private posts = [];
 
     constructor(private http: HttpClient) { }
 
 
     createPost(data) {
         const currentUser = JSON.parse(localStorage.getItem('userData'));
-        if (!currentUser.token) {
-            return
-        }
-        this.userToken = currentUser.token;
-        let headers = new HttpHeaders();
-        this.headerToAppend(headers)
+        let headers = this.setTokenHeaders(currentUser);
+        
         return this.http.post<any>(
             'https://api.backendless.com/66BE35C3-B35F-ED2B-FFA7-FC85EE5A8E00/5F613093-6F99-4008-AAB6-9B36E5199013/data/post',
             {
@@ -61,12 +56,8 @@ export class PostService {
 
     editPostById(id, newData) {
         const currentUser = JSON.parse(localStorage.getItem('userData'));
-        if (!currentUser.token) {
-            return
-        }
-        this.userToken = currentUser.token;
-        let headers = new HttpHeaders();
-        this.headerToAppend(headers)
+        let headers = this.setTokenHeaders(currentUser);
+        
         return this.http.put(
             `https://api.backendless.com/66BE35C3-B35F-ED2B-FFA7-FC85EE5A8E00/5F613093-6F99-4008-AAB6-9B36E5199013/data/post/${id}`,
             newData,
@@ -75,21 +66,12 @@ export class PostService {
             }
         ).pipe(
             catchError(this.handleError),
-            tap(newObj => {
-                console.log('Object edited');
-
-            })
         ).subscribe()
     }
 
     deletePostById(id) {
         const currentUser = JSON.parse(localStorage.getItem('userData'));
-        if (!currentUser.token) {
-            return
-        }
-        this.userToken = currentUser.token;
-        let headers = new HttpHeaders();
-        this.headerToAppend(headers)
+        let headers = this.setTokenHeaders(currentUser);
 
         return this.http.delete(
             `https://api.backendless.com/66BE35C3-B35F-ED2B-FFA7-FC85EE5A8E00/5F613093-6F99-4008-AAB6-9B36E5199013/data/post/${id}`,
@@ -98,15 +80,22 @@ export class PostService {
             }
         ).pipe(
             catchError(this.handleError),
-            tap(response => {
-                console.log('Post is deleted!');
-            })
         ).subscribe()
     }
 
 
     headerToAppend(headers: HttpHeaders) {   // must add user token from login
         headers.append('user-token', this.userToken);
+    }
+
+    private setTokenHeaders(currentUser) {
+        if (!currentUser.token) {
+            return
+        }
+        this.userToken = currentUser.token;
+        let headers = new HttpHeaders();
+        this.headerToAppend(headers)
+        return headers
     }
 
     private handleError(errorRes: HttpErrorResponse) {

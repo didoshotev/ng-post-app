@@ -11,14 +11,15 @@ import { User } from './user.model';
 })
 export class UserService {
     userToken;
+    logInError = false;
 
     user = new BehaviorSubject<any>(null);
     private tokenExpirationTimer: any;
 
     constructor(
         private http: HttpClient,
-         private router: Router,
-         ) { }
+        private router: Router,
+    ) { }
 
     register(email: string, password: string, username: string) {
         return this.http.post<any>(
@@ -43,7 +44,6 @@ export class UserService {
                     response['user-token'],
                     response.createdPosts,
                     response.postsLiked,
-                    response.savedPosts,
                 )
             })
         )
@@ -67,7 +67,6 @@ export class UserService {
                     response['user-token'],
                     response.createdPosts,
                     response.postsLiked,
-                    response.savedPosts,
                 )
             })
         )
@@ -75,8 +74,8 @@ export class UserService {
 
     autoLogin() {
         const userData = JSON.parse(localStorage.getItem('userData'));
-        
-        
+
+
         if (!userData) {
             return;
         }
@@ -84,15 +83,16 @@ export class UserService {
             userData.email,
             userData.name,
             userData.objectId,
-            userData.token,
+            userData._token,
+            new Date(userData._tokenExperationDate),
             userData.createdPosts,
             userData.postsLiked,
         )
         if (loadedUser.token) {
             this.user.next(loadedUser);
-            //   const expirationDuration = new Date(userData._tokenExperationDate)
-            //   .getTime() - new Date().getTime();
-            this.autoLogout(300000);
+            const expirationDuration = new Date(userData._tokenExperationDate)
+            .getTime() - new Date().getTime();
+            this.autoLogout(expirationDuration);
         }
     }
 
@@ -108,7 +108,12 @@ export class UserService {
 
 
     autoLogout(expirationDuration: number) {
+        //console.log(expirationDuration);
         this.tokenExpirationTimer = setTimeout(() => {
+            console.log('Log out at');
+            console.log(Date.now());
+            console.log(Date.UTC);
+            
             this.logout();
         }, expirationDuration)
     }
@@ -123,7 +128,7 @@ export class UserService {
         this.headerToAppend(headers)
 
         let newObj = [];
-        
+
         let createdPosts = currentUser.createdPosts
         createdPosts.map(item => newObj.push(item))
         newObj.push({ postId: objectId, title: post.title });
@@ -152,7 +157,7 @@ export class UserService {
                 this.user.next(newUserData);
                 this.router.navigate(['/posts'])
             })
-        ) 
+        )
     }
 
     updateUserLikedPosts(userId, post) {
@@ -203,11 +208,11 @@ export class UserService {
 
         let newObj = [];
         let createdPosts = currentUser.createdPosts
-        createdPosts.map(item =>  {
-            if(item.postId !== objectId) {
-                newObj.push(item)  
+        createdPosts.map(item => {
+            if (item.postId !== objectId) {
+                newObj.push(item)
             }
-         })
+        })
         newObj.push({ postId: objectId, title: post.title });
 
         let newUserData = {
@@ -232,8 +237,9 @@ export class UserService {
             catchError(this.handleError),
             tap(data => {
                 this.user.next(newUserData)
+                this.router.navigate(['/posts']);
             })
-        ) 
+        )
     }
 
     updateUserDeletedPost(userId, post, objectId) {
@@ -247,13 +253,13 @@ export class UserService {
 
         let newObj = [];
         let createdPosts = currentUser.createdPosts
-        createdPosts.map(item =>  {
-            if(item.postId !== objectId) {
-                newObj.push(item)  
+        createdPosts.map(item => {
+            if (item.postId !== objectId) {
+                newObj.push(item)
             }
-         })
+        })
 
-         let newUserData = {
+        let newUserData = {
             email: currentUser.email,
             name: currentUser.name,
             objectId: currentUser.objectId,
@@ -277,21 +283,22 @@ export class UserService {
                 this.user.next(newUserData);
                 this.router.navigate(['/']);
             })
-        ) 
+        )
     }
 
-    private handleAuthentication(email: string, name: string, objectId: string, token: string, createdPosts, postsLiked, savedPosts) {
+    private handleAuthentication(email: string, name: string, objectId: string, token: string, createdPosts, postsLiked) {
         let currentUser;
-        // const expirationDate = new Date(new Date().getTime() + 3600 * 1000);
+        const expirationDate = new Date(new Date().getTime() + 3600 * 1000);
         currentUser = new User(
             email,
             name,
             objectId,
             token,
+            expirationDate,
             createdPosts,
             postsLiked,
         )
-        
+
         this.user.next(currentUser);
         this.autoLogout(3600 * 1000);
         localStorage.setItem('userData', JSON.stringify(currentUser));
@@ -300,8 +307,9 @@ export class UserService {
 
 
     private handleError(errorRes: HttpErrorResponse) {
+        this.logInError = true;
         let errorMessage = 'An unknown error occurred!';
-        if (errorRes.error.code === 3003) {
+        if (errorRes.error.code === 3003 || errorRes.error.code === 3002 || errorRes.error.code === 3011) {
             errorMessage = errorRes.error.message;
         }
         return throwError(errorMessage);

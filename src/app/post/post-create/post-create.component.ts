@@ -19,10 +19,7 @@ export class PostCreateComponent implements OnInit, OnDestroy {
   currentId;
   currentPost;
   editMode = false;
-  paramsId;
-
   postResolveData;
-
   user;
   userSubscription: Subscription;
 
@@ -95,7 +92,7 @@ export class PostCreateComponent implements OnInit, OnDestroy {
     this.postForm = new FormGroup({
       'title': new FormControl(title, [Validators.required]),
       'type': new FormControl(type, [Validators.required]),
-      'imageUrl': new FormControl(imageUrl, [Validators.required]),
+      'imageUrl': new FormControl(imageUrl),
       'textContent': new FormControl(textContent, [Validators.required]),
     })
   }

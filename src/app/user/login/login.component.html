@@ -8,6 +8,10 @@
               This email is invalid!
         </div>
         <input type="password" id="password" class="fadeIn third" name="login" formControlName="password" placeholder="password">
+        <div *ngIf="loginError"
+        style="font-size: 15px; color: rgb(250, 100, 132)">
+              {{loginError}}
+        </div>
         <button 
         class="btn btn-primary" style="margin-bottom: 20px; margin-top: 20px;"
         [disabled]="loginForm.status === 'INVALID'"

@@ -9,9 +9,7 @@ import { UserService } from 'src/app/user/user.service';
 })
 export class HomeComponent implements OnInit {
 
-  constructor(private userService: UserService,
-    private router: Router
-    ) {
+  constructor(private router: Router) {
     
   }
 
